@@ -1,30 +1,37 @@
 require('dotenv').config()
 
-const express    = require('express')
-const mongoose   = require('mongoose')
-const cors       = require('cors')
-const bcrypt     = require('bcryptjs')
-const jwt        = require('jsonwebtoken')
-const passport   = require('passport')
+const express        = require('express')
+const mongoose       = require('mongoose')
+const cors           = require('cors')
+const bcrypt         = require('bcryptjs')
+const jwt            = require('jsonwebtoken')
+const passport       = require('passport')
+const Razorpay       = require('razorpay')
+const crypto         = require('crypto')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
-const HotelModel = require('./models/hotel')
+const HotelModel     = require('./models/hotel')
 
 const app = express()
 
 // ── CORS ──────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: 'http://localhost:5173',  // Vite default; change to 3000 if CRA
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true
 }))
 app.use(express.json())
 
-const JWT_SECRET           = "hungry_layer_secret_key_2025"
-const GOOGLE_CLIENT_ID     = "process.env.GOOGLE_CLIENT_ID"
-const GOOGLE_CLIENT_SECRET = "process.env.GOOGLE_CLIENT_SECRET"
-const CLIENT_URL           = "http://localhost:5173"
+const JWT_SECRET = process.env.JWT_SECRET || "hungry_layer_secret_key_2025"
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173"
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000"
+
+// ── Razorpay ──────────────────────────────────────────────────────────
+const razorpay = new Razorpay({
+  key_id:     process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+})
 
 // ── MongoDB ───────────────────────────────────────────────────────────
-mongoose.connect("mongodb://127.0.0.1:27017/hotel")
+mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/hotel")
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.log("❌ MongoDB error:", err))
 
@@ -47,64 +54,51 @@ const verifyToken = (req, res, next) => {
   }
 }
 
-// ── Passport Google Strategy ──────────────────────────────────────────
-passport.use(new GoogleStrategy(
-  {
-    clientID:     GOOGLE_CLIENT_ID,
-    clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL:  'http://localhost:5000/auth/google/callback',
-  },
-  async (accessToken, refreshToken, profile, done) => {
-    try {
-      const email = profile.emails[0].value
-      let user = await HotelModel.findOne({ email })
-
-      if (!user) {
-        // First Google login → auto-create account
-        user = await HotelModel.create({
-          name:       profile.displayName,
-          email,
-          password:   await bcrypt.hash(Math.random().toString(36), 10),
-          phone:      '',
-          googleId:   profile.id,
-          avatar:     profile.photos?.[0]?.value || '',
-          authMethod: 'google',
-        })
-      } else if (!user.googleId) {
-        // Existing local account → link Google to it
-        user.googleId   = profile.id
-        user.avatar     = user.avatar || profile.photos?.[0]?.value || ''
-        user.authMethod = 'linked'
-        await user.save()
-      }
-
-      return done(null, user)
-    } catch (err) {
-      return done(err, null)
+// ── Google OAuth ──────────────────────────────────────────────────────
+passport.use(new GoogleStrategy({
+  clientID:     process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL:  `${BACKEND_URL}/auth/google/callback`,
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    const email = profile.emails[0].value
+    let user = await HotelModel.findOne({ email })
+    if (!user) {
+      user = await HotelModel.create({
+        name:       profile.displayName,
+        email,
+        password:   await bcrypt.hash(Math.random().toString(36), 10),
+        phone:      '',
+        googleId:   profile.id,
+        avatar:     profile.photos?.[0]?.value || '',
+        authMethod: 'google',
+      })
+    } else if (!user.googleId) {
+      user.googleId   = profile.id
+      user.avatar     = user.avatar || profile.photos?.[0]?.value || ''
+      user.authMethod = 'linked'
+      await user.save()
     }
-  }
-))
+    return done(null, user)
+  } catch (err) { return done(err, null) }
+}))
 
 app.use(passport.initialize())
 
-// ── REGISTER ─────────────────────────────────────────────────────────
+// ── REGISTER ──────────────────────────────────────────────────────────
 app.post('/register', async (req, res) => {
   const { name, email, password, phone } = req.body
   if (!name || !email || !password)
     return res.status(400).json({ message: "Name, email and password are required" })
-
   try {
     if (await HotelModel.findOne({ email }))
       return res.status(409).json({ message: "Email already registered" })
-
     const user = await HotelModel.create({
-      name,
-      email,
+      name, email,
       password:   await bcrypt.hash(password, 10),
       phone:      phone || '',
       authMethod: 'local',
     })
-
     return res.json({
       message: "Success",
       token: signToken(user),
@@ -120,19 +114,13 @@ app.post('/login', async (req, res) => {
   const { email, password } = req.body
   if (!email || !password)
     return res.status(400).json({ message: "Email and password are required" })
-
   try {
     const user = await HotelModel.findOne({ email })
-    if (!user)
-      return res.status(404).json({ message: "User not found" })
-
+    if (!user) return res.status(404).json({ message: "User not found" })
     if (user.authMethod === 'google')
       return res.status(400).json({ message: "This account uses Google Sign-In. Please click the Google button." })
-
     const isMatch = await bcrypt.compare(password, user.password)
-    if (!isMatch)
-      return res.status(401).json({ message: "Invalid password" })
-
+    if (!isMatch) return res.status(401).json({ message: "Invalid password" })
     return res.json({
       message: "Success",
       token: signToken(user),
@@ -143,12 +131,11 @@ app.post('/login', async (req, res) => {
   }
 })
 
-// ── GOOGLE OAUTH: Step 1 — redirect to Google ─────────────────────────
+// ── GOOGLE OAUTH ROUTES ───────────────────────────────────────────────
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'], session: false })
 )
 
-// ── GOOGLE OAUTH: Step 2 — Google calls back ──────────────────────────
 app.get('/auth/google/callback',
   passport.authenticate('google', {
     session: false,
@@ -165,36 +152,80 @@ app.get('/auth/google/callback',
         avatar: req.user.avatar || '',
       }
     }
-    // Send token + user to frontend via URL query param
-    const encoded = encodeURIComponent(JSON.stringify(payload))
-    res.redirect(`${CLIENT_URL}/auth/callback?data=${encoded}`)
+    res.redirect(`${CLIENT_URL}/auth/callback?data=${encodeURIComponent(JSON.stringify(payload))}`)
   }
 )
 
-// ── GET PROFILE (protected) ───────────────────────────────────────────
+// ── PROFILE ───────────────────────────────────────────────────────────
 app.get('/profile', verifyToken, async (req, res) => {
   try {
     const user = await HotelModel.findById(req.user.id).select('-password')
     if (!user) return res.status(404).json({ message: "User not found" })
     return res.json({ user })
-  } catch {
-    return res.status(500).json({ message: "Server error" })
-  }
+  } catch { return res.status(500).json({ message: "Server error" }) }
 })
 
-// ── UPDATE PROFILE (protected) ────────────────────────────────────────
 app.put('/profile', verifyToken, async (req, res) => {
   const { name, phone } = req.body
   try {
     const updated = await HotelModel.findByIdAndUpdate(
-      req.user.id,
-      { name, phone },
-      { new: true }
+      req.user.id, { name, phone }, { new: true }
     ).select('-password')
     return res.json({ message: "Profile updated", user: updated })
-  } catch {
-    return res.status(500).json({ message: "Server error" })
+  } catch { return res.status(500).json({ message: "Server error" }) }
+})
+
+// ══════════════════════════════════════════════════════════════════════
+//  RAZORPAY PAYMENT ROUTES
+// ══════════════════════════════════════════════════════════════════════
+
+// POST /payment/create-order
+app.post('/payment/create-order', async (req, res) => {
+  const { amount } = req.body
+  if (!amount || amount <= 0)
+    return res.status(400).json({ message: "Invalid amount" })
+  try {
+    const order = await razorpay.orders.create({
+      amount:   Math.round(amount * 100), // ₹ to paise
+      currency: 'INR',
+      receipt:  `rcpt_${Date.now()}`,
+    })
+    return res.json({
+      orderId:  order.id,
+      amount:   order.amount,
+      currency: order.currency,
+      keyId:    process.env.RAZORPAY_KEY_ID,
+    })
+  } catch (err) {
+    console.error("Razorpay create-order error:", err)
+    return res.status(500).json({ message: "Failed to create order: " + err.message })
   }
 })
 
-app.listen(5000, () => console.log("🚀 Server running on http://localhost:5000"))
+// POST /payment/verify
+app.post('/payment/verify', async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature)
+    return res.status(400).json({ message: "Missing payment fields" })
+  try {
+    const expected = crypto
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest('hex')
+
+    if (expected !== razorpay_signature)
+      return res.status(400).json({ success: false, message: "Invalid payment signature" })
+
+    return res.json({
+      success:   true,
+      message:   "Payment verified successfully",
+      paymentId: razorpay_payment_id,
+    })
+  } catch (err) {
+    return res.status(500).json({ message: "Verification error: " + err.message })
+  }
+})
+
+// ─────────────────────────────────────────────────────────────────────
+const PORT = process.env.PORT || 5000
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))  
