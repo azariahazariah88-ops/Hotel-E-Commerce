@@ -13,16 +13,38 @@ const HotelModel     = require('./models/hotel')
 
 const app = express()
 
-// ── CORS ──────────────────────────────────────────────────────────────
+// ── CORS — allow Vercel frontend + localhost ───────────────────────────
+const allowedOrigins = [
+  'https://hotel-e-commerce-tawny.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000',
+]
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true
+  origin: (origin, callback) => {
+    // allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return callback(null, true)
+    if (allowedOrigins.includes(origin)) return callback(null, true)
+    return callback(new Error('Not allowed by CORS'))
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }))
+
+// Handle preflight requests
+app.options('*', cors())
+
 app.use(express.json())
 
-const JWT_SECRET = process.env.JWT_SECRET || "hungry_layer_secret_key_2025"
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173"
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000"
+// ── Health check route ────────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', message: '🚀 Hungry Layer Backend Running' })
+})
+
+const JWT_SECRET  = process.env.JWT_SECRET  || "hungry_layer_secret_key_2025"
+const CLIENT_URL  = process.env.CLIENT_URL  || "https://hotel-e-commerce-tawny.vercel.app"
+const BACKEND_URL = process.env.BACKEND_URL || "https://hotel-e-commerce-bakend.onrender.com"
 
 // ── Razorpay ──────────────────────────────────────────────────────────
 const razorpay = new Razorpay({
@@ -176,17 +198,16 @@ app.put('/profile', verifyToken, async (req, res) => {
 })
 
 // ══════════════════════════════════════════════════════════════════════
-//  RAZORPAY PAYMENT ROUTES
+//  RAZORPAY
 // ══════════════════════════════════════════════════════════════════════
 
-// POST /payment/create-order
 app.post('/payment/create-order', async (req, res) => {
   const { amount } = req.body
   if (!amount || amount <= 0)
     return res.status(400).json({ message: "Invalid amount" })
   try {
     const order = await razorpay.orders.create({
-      amount:   Math.round(amount * 100), // ₹ to paise
+      amount:   Math.round(amount * 100),
       currency: 'INR',
       receipt:  `rcpt_${Date.now()}`,
     })
@@ -202,7 +223,6 @@ app.post('/payment/create-order', async (req, res) => {
   }
 })
 
-// POST /payment/verify
 app.post('/payment/verify', async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body
   if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature)
@@ -228,4 +248,4 @@ app.post('/payment/verify', async (req, res) => {
 
 // ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))  
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
