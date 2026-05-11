@@ -5,7 +5,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useAuth } from "./AuthContext";
 
-const API = "http://localhost:5000";
+const API = "https://hotel-e-commerce-bakend.onrender.com";
 
 const inputStyle = {
   width: "100%", padding: "12px 16px",
