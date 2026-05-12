@@ -13,16 +13,15 @@ const HotelModel     = require('./models/hotel')
 
 const app = express()
 
-// ── CORS — allow Vercel frontend + localhost ───────────────────────────
+// ── CORS ──────────────────────────────────────────────────────────────
 const allowedOrigins = [
   'https://hotel-e-commerce-tawny.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000',
 ]
 
-app.use(cors({
+const corsOptions = {
   origin: (origin, callback) => {
-    // allow requests with no origin (mobile apps, curl, Postman)
     if (!origin) return callback(null, true)
     if (allowedOrigins.includes(origin)) return callback(null, true)
     return callback(new Error('Not allowed by CORS'))
@@ -30,16 +29,14 @@ app.use(cors({
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-}))
+}
 
-// Handle preflight requests
-app.options('*', cors())
-
+app.use(cors(corsOptions))
 app.use(express.json())
 
-// ── Health check route ────────────────────────────────────────────────
+// ── Health check ──────────────────────────────────────────────────────
 app.get('/', (req, res) => {
-  res.json({ status: 'ok', message: '🚀 Hungry Layer Backend Running' })
+  res.json({ status: 'ok', message: '🚀 Hungry Layer Backend is Running!' })
 })
 
 const JWT_SECRET  = process.env.JWT_SECRET  || "hungry_layer_secret_key_2025"
@@ -140,7 +137,7 @@ app.post('/login', async (req, res) => {
     const user = await HotelModel.findOne({ email })
     if (!user) return res.status(404).json({ message: "User not found" })
     if (user.authMethod === 'google')
-      return res.status(400).json({ message: "This account uses Google Sign-In. Please click the Google button." })
+      return res.status(400).json({ message: "This account uses Google Sign-In." })
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) return res.status(401).json({ message: "Invalid password" })
     return res.json({
@@ -153,7 +150,7 @@ app.post('/login', async (req, res) => {
   }
 })
 
-// ── GOOGLE OAUTH ROUTES ───────────────────────────────────────────────
+// ── GOOGLE OAUTH ──────────────────────────────────────────────────────
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'], session: false })
 )
@@ -197,10 +194,7 @@ app.put('/profile', verifyToken, async (req, res) => {
   } catch { return res.status(500).json({ message: "Server error" }) }
 })
 
-// ══════════════════════════════════════════════════════════════════════
-//  RAZORPAY
-// ══════════════════════════════════════════════════════════════════════
-
+// ── RAZORPAY ──────────────────────────────────────────────────────────
 app.post('/payment/create-order', async (req, res) => {
   const { amount } = req.body
   if (!amount || amount <= 0)
@@ -218,7 +212,7 @@ app.post('/payment/create-order', async (req, res) => {
       keyId:    process.env.RAZORPAY_KEY_ID,
     })
   } catch (err) {
-    console.error("Razorpay create-order error:", err)
+    console.error("Razorpay error:", err)
     return res.status(500).json({ message: "Failed to create order: " + err.message })
   }
 })
@@ -232,15 +226,9 @@ app.post('/payment/verify', async (req, res) => {
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest('hex')
-
     if (expected !== razorpay_signature)
-      return res.status(400).json({ success: false, message: "Invalid payment signature" })
-
-    return res.json({
-      success:   true,
-      message:   "Payment verified successfully",
-      paymentId: razorpay_payment_id,
-    })
+      return res.status(400).json({ success: false, message: "Invalid signature" })
+    return res.json({ success: true, message: "Payment verified", paymentId: razorpay_payment_id })
   } catch (err) {
     return res.status(500).json({ message: "Verification error: " + err.message })
   }
