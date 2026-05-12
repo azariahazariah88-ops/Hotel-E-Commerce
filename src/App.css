@@ -1,23 +1,89 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap');
 
-* {
-  box-sizing: border-box;
+:root {
+  --primary: #FF5722;
+  --primary-light: #FF7043;
+  --primary-dark: #E64A19;
+  --secondary: #FFC107;
+  --accent-green: #4CAF50;
+  --accent-purple: #9C27B0;
+  --bg: #FFF8F5;
+  --bg-card: #FFFFFF;
+  --bg-subtle: #FFF3EE;
+  --text-main: #1A1A2E;
+  --text-muted: #6B7280;
+  --text-light: #9CA3AF;
+  --border: #F3E8E3;
+  --shadow-sm: 0 2px 8px rgba(255,87,34,0.08);
+  --shadow-md: 0 8px 24px rgba(255,87,34,0.12);
+  --shadow-lg: 0 16px 48px rgba(255,87,34,0.18);
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
 }
 
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  background: #0d0d0d;
-  margin: 0;
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  color: var(--text-main);
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #111; }
-::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #f5c842; }
+::-webkit-scrollbar-track { background: #FFF3EE; }
+::-webkit-scrollbar-thumb { background: #FFCCBC; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-/* Smooth transitions */
-a, button { transition: all 0.2s ease; }
-
-/* Input placeholders */
-input::placeholder { color: rgba(255,255,255,0.35); }
+a, button { transition: all 0.22s ease; }
+input::placeholder { color: #BEB4AE; }
 input:focus { outline: none; }
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #FF5722, #FF9800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Pulse animation for badges */
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+/* Float animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Spin */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Slide up */
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Pop in */
+@keyframes popIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* fadeUp */
+@keyframes fadeUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

@@ -1,109 +1,164 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "./CartContext";
 import { useAuth } from "./AuthContext";
 import logo from "./assets/bg3.png";
 
 function Navbar() {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { cartCount } = useCart();
-  const { user }  = useAuth();
-  const isHome    = location.pathname === "/";
+  const { user } = useAuth();
+  const isHome = location.pathname === "/";
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navStyle = {
+    background: "#FFFFFF",
+    borderBottom: "1px solid #FFE0D6",
+    padding: "0 1.5rem",
+    display: "flex",
+    alignItems: "center",
+    height: "68px",
+    position: "sticky",
+    top: 0,
+    zIndex: 1000,
+    fontFamily: "'Nunito', sans-serif",
+    boxShadow: "0 2px 16px rgba(255,87,34,0.08)",
+  };
 
   return (
-    <nav style={{
-      background: "rgba(10,10,10,0.95)",
-      backdropFilter: "blur(20px)",
-      borderBottom: "1px solid rgba(255,200,50,0.15)",
-      padding: "0 2rem",
-      display: "flex",
-      alignItems: "center",
-      height: "68px",
-      position: "sticky",
-      top: 0,
-      zIndex: 1000,
-      fontFamily: "'Playfair Display', serif",
-    }}>
+    <nav style={navStyle}>
       {/* Logo + Brand */}
-      <div style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }} onClick={() => navigate("/")}>
-        <img src={logo} alt="logo" style={{ width: 44, height: 44, borderRadius: "50%", border: "2px solid #f5c842", objectFit: "cover" }} />
-        <span style={{ color: "#f5c842", fontSize: "1.4rem", fontWeight: 700, letterSpacing: "1px" }}>HUNGRY LAYER</span>
+      <div
+        style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}
+        onClick={() => navigate("/")}
+      >
+        <div style={{
+          width: 42, height: 42, borderRadius: "50%",
+          background: "linear-gradient(135deg, #FF5722, #FF9800)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: "1.3rem", boxShadow: "0 4px 12px rgba(255,87,34,0.35)",
+        }}>
+          🍽️
+        </div>
+        <div>
+          <span style={{
+            background: "linear-gradient(135deg, #FF5722, #FF9800)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            fontSize: "1.3rem", fontWeight: 900, letterSpacing: "-0.5px",
+            fontFamily: "'Poppins', sans-serif",
+          }}>
+            HUNGRY LAYER
+          </span>
+          <div style={{ fontSize: "0.6rem", color: "#FF7043", fontWeight: 700, letterSpacing: "1px", marginTop: -2 }}>
+            FAST · FRESH · FLAVOURFUL
+          </div>
+        </div>
+      </div>
+
+      {/* Delivery badge */}
+      <div style={{
+        marginLeft: 20,
+        background: "#FFF3EE", border: "1px solid #FFCCBC",
+        borderRadius: 20, padding: "4px 12px",
+        display: "flex", alignItems: "center", gap: 6,
+        fontSize: "0.75rem", color: "#FF5722", fontWeight: 700,
+      }}>
+        <span style={{ color: "#4CAF50", fontSize: "0.7rem" }}>●</span> Delivering Now
       </div>
 
       {/* Right Nav */}
-      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "8px" }}>
-        {!isHome && <NavBtn onClick={() => navigate("/")} icon="bi-house-fill" label="Home" />}
-        <NavBtn onClick={() => navigate("/cart")} icon="bi-bag-fill" label="Cart" badge={cartCount > 0 ? cartCount : null} />
+      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "6px" }}>
+        {!isHome && (
+          <NavBtn onClick={() => navigate("/")} icon="bi-house-fill" label="Home" />
+        )}
+        <NavBtn
+          onClick={() => navigate("/cart")}
+          icon="bi-bag-fill"
+          label="Cart"
+          badge={cartCount > 0 ? cartCount : null}
+          highlight
+        />
         <NavBtn onClick={() => navigate("/orders")} icon="bi-receipt" label="Orders" />
 
-        {/* Profile — shows avatar + name if logged in */}
         {user ? (
           <button
             onClick={() => navigate("/profile")}
             style={{
-              background: "rgba(245,200,66,0.1)",
-              border: "1px solid rgba(245,200,66,0.35)",
-              color: "#f5c842",
+              background: "linear-gradient(135deg, #FF5722, #FF7043)",
+              border: "none",
+              color: "#fff",
               borderRadius: "24px",
-              padding: "5px 14px 5px 6px",
+              padding: "6px 14px 6px 6px",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               gap: "8px",
-              fontSize: "0.88rem",
-              fontFamily: "'Playfair Display', serif",
-              transition: "all 0.2s",
+              fontSize: "0.85rem",
+              fontFamily: "'Nunito', sans-serif",
+              fontWeight: 700,
+              boxShadow: "0 4px 12px rgba(255,87,34,0.3)",
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(245,200,66,0.18)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(245,200,66,0.1)"; }}
           >
-            {/* Mini avatar circle */}
             <span style={{
               width: 28, height: 28, borderRadius: "50%",
-              background: "#f5c842", color: "#111",
+              background: "rgba(255,255,255,0.25)", color: "#fff",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontWeight: 700, fontSize: "0.8rem", flexShrink: 0,
+              fontWeight: 900, fontSize: "0.82rem",
             }}>
               {user.name?.[0]?.toUpperCase()}
             </span>
-            <span style={{ maxWidth: 90, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <span style={{ maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {user.name.split(" ")[0]}
             </span>
           </button>
         ) : (
-          <NavBtn onClick={() => navigate("/profile")} icon="bi-person-circle" label="Profile" />
+          <NavBtn onClick={() => navigate("/profile")} icon="bi-person-circle" label="Login" />
         )}
       </div>
     </nav>
   );
 }
 
-function NavBtn({ onClick, icon, label, badge }) {
+function NavBtn({ onClick, icon, label, badge, highlight }) {
+  const [hovered, setHovered] = React.useState(false);
+
   return (
-    <button onClick={onClick}
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
-        background: "transparent",
-        border: "1px solid rgba(245,200,66,0.25)",
-        color: "#e8e8e8",
-        borderRadius: "24px",
-        padding: "6px 16px",
+        background: highlight
+          ? hovered ? "linear-gradient(135deg, #E64A19, #FF5722)" : "linear-gradient(135deg, #FF5722, #FF7043)"
+          : hovered ? "#FFF3EE" : "transparent",
+        border: highlight ? "none" : `1px solid ${hovered ? "#FFCCBC" : "#F3E8E3"}`,
+        color: highlight ? "#fff" : hovered ? "#FF5722" : "#4B5563",
+        borderRadius: "22px",
+        padding: "7px 16px",
         cursor: "pointer",
         display: "flex",
         alignItems: "center",
         gap: "6px",
-        fontSize: "0.88rem",
-        fontFamily: "'Playfair Display', serif",
-        transition: "all 0.2s",
+        fontSize: "0.85rem",
+        fontFamily: "'Nunito', sans-serif",
+        fontWeight: 700,
         position: "relative",
+        boxShadow: highlight ? "0 4px 14px rgba(255,87,34,0.3)" : "none",
+        transition: "all 0.2s ease",
       }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(245,200,66,0.12)"; e.currentTarget.style.color = "#f5c842"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#e8e8e8"; }}
     >
       <i className={`bi ${icon}`}></i>
       <span>{label}</span>
       {badge && (
-        <span style={{ position: "absolute", top: -6, right: -6, background: "#f5c842", color: "#111", borderRadius: "50%", width: 20, height: 20, fontSize: "0.7rem", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
+        <span style={{
+          position: "absolute", top: -7, right: -7,
+          background: "#FF1744", color: "#fff",
+          borderRadius: "50%", width: 20, height: 20,
+          fontSize: "0.68rem", display: "flex", alignItems: "center", justifyContent: "center",
+          fontWeight: 900, border: "2px solid #fff",
+          animation: "pulse-badge 1.5s ease-in-out infinite",
+        }}>
           {badge}
         </span>
       )}

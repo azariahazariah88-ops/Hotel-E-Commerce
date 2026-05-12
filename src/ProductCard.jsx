@@ -1,61 +1,105 @@
 import React, { useState } from "react";
 import { useCart } from "./CartContext";
 
+const categoryTheme = {
+  food:    { color: "#FF5722", bg: "#FFF3EE", border: "#FFCCBC" },
+  cake:    { color: "#9C27B0", bg: "#F3E5F5", border: "#CE93D8" },
+  grocery: { color: "#4CAF50", bg: "#E8F5E9", border: "#A5D6A7" },
+};
+
 function ProductCard({ item, category }) {
   const { addToCart } = useCart();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  const theme = categoryTheme[category] || categoryTheme.food;
 
   const handleAdd = () => {
     addToCart({ ...item, category, quantity: Number(qty) });
     setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
+    setTimeout(() => setAdded(false), 1600);
   };
 
   return (
     <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
-        background: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        borderRadius: 18,
-        padding: 20,
+        background: "#fff",
+        border: `2px solid ${hovered ? theme.border : "#F3E8E3"}`,
+        borderRadius: 20,
+        overflow: "hidden",
         display: "flex",
-        gap: 18,
-        alignItems: "flex-start",
-        transition: "all 0.3s ease",
-        backdropFilter: "blur(8px)",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.border = "1px solid rgba(245,200,66,0.35)";
-        e.currentTarget.style.background = "rgba(255,255,255,0.07)";
-        e.currentTarget.style.transform = "translateY(-3px)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.border = "1px solid rgba(255,255,255,0.08)";
-        e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-        e.currentTarget.style.transform = "none";
+        transition: "all 0.3s cubic-bezier(0.34,1.56,0.64,1)",
+        transform: hovered ? "translateY(-5px)" : "none",
+        boxShadow: hovered
+          ? `0 16px 40px ${theme.color}18`
+          : "0 4px 16px rgba(0,0,0,0.05)",
+        position: "relative",
       }}
     >
-      <img
-        src={item.image}
-        alt={item.name}
-        style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 12, flexShrink: 0 }}
-      />
-      <div style={{ flex: 1 }}>
-        <h5 style={{ color: "#fff", marginBottom: 4, fontSize: "1.05rem" }}>{item.name}</h5>
-        <p style={{ color: "#f5c842", fontWeight: 600, marginBottom: 12, fontSize: "1rem" }}>₹{item.price}</p>
+      {/* Image */}
+      <div style={{ position: "relative", width: 120, flexShrink: 0, overflow: "hidden" }}>
+        <img
+          src={item.image}
+          alt={item.name}
+          style={{
+            width: "100%", height: "100%",
+            objectFit: "cover",
+            transition: "transform 0.4s ease",
+            transform: hovered ? "scale(1.08)" : "scale(1)",
+            display: "block",
+          }}
+        />
+        <div style={{
+          position: "absolute", inset: 0,
+          background: `linear-gradient(to right, transparent, ${theme.color}10)`,
+        }} />
+      </div>
+
+      {/* Content */}
+      <div style={{ flex: 1, padding: "16px 18px" }}>
+        <h5 style={{ color: "#1A1A2E", marginBottom: 4, fontSize: "1rem", fontWeight: 800 }}>{item.name}</h5>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+          <span style={{
+            color: theme.color,
+            fontWeight: 900, fontSize: "1.15rem",
+          }}>₹{item.price}</span>
+          <span style={{
+            background: "#E8F5E9", color: "#4CAF50",
+            borderRadius: 10, padding: "1px 8px",
+            fontSize: "0.68rem", fontWeight: 800,
+          }}>FREE Delivery</span>
+        </div>
 
         <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
           {/* Qty stepper */}
-          <div style={{ display: "flex", alignItems: "center", background: "rgba(255,255,255,0.08)", borderRadius: 30, overflow: "hidden" }}>
+          <div style={{
+            display: "flex", alignItems: "center",
+            background: theme.bg, border: `1.5px solid ${theme.border}`,
+            borderRadius: 30, overflow: "hidden",
+          }}>
             <button
               onClick={() => setQty((q) => Math.max(1, q - 1))}
-              style={{ background: "transparent", border: "none", color: "#fff", width: 32, height: 34, cursor: "pointer", fontSize: "1.1rem" }}
+              style={{
+                background: "transparent", border: "none",
+                color: theme.color, width: 34, height: 34,
+                cursor: "pointer", fontSize: "1.2rem", fontWeight: 900,
+              }}
             >−</button>
-            <span style={{ color: "#fff", width: 28, textAlign: "center", fontSize: "0.95rem" }}>{qty}</span>
+            <span style={{
+              color: "#1A1A2E", width: 28, textAlign: "center",
+              fontSize: "0.95rem", fontWeight: 800,
+            }}>{qty}</span>
             <button
               onClick={() => setQty((q) => q + 1)}
-              style={{ background: "transparent", border: "none", color: "#fff", width: 32, height: 34, cursor: "pointer", fontSize: "1.1rem" }}
+              style={{
+                background: "transparent", border: "none",
+                color: theme.color, width: 34, height: 34,
+                cursor: "pointer", fontSize: "1.2rem", fontWeight: 900,
+              }}
             >+</button>
           </div>
 
@@ -63,16 +107,22 @@ function ProductCard({ item, category }) {
           <button
             onClick={handleAdd}
             style={{
-              background: added ? "#28a745" : "#f5c842",
-              color: added ? "#fff" : "#111",
+              background: added
+                ? "linear-gradient(135deg, #4CAF50, #66BB6A)"
+                : `linear-gradient(135deg, ${theme.color}, ${theme.color}CC)`,
+              color: "#fff",
               border: "none",
               borderRadius: 30,
-              padding: "7px 20px",
-              fontWeight: 700,
+              padding: "8px 20px",
+              fontWeight: 800,
               fontSize: "0.85rem",
               cursor: "pointer",
               transition: "all 0.3s",
-              fontFamily: "'Lora', serif",
+              fontFamily: "'Nunito', sans-serif",
+              boxShadow: added
+                ? "0 4px 12px rgba(76,175,80,0.35)"
+                : `0 4px 12px ${theme.color}35`,
+              transform: added ? "scale(0.97)" : "scale(1)",
             }}
           >
             {added ? "✓ Added!" : "Add to Cart"}
