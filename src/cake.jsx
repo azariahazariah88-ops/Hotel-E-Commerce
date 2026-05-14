@@ -13,7 +13,7 @@ import ProductCard from './ProductCard'
 function Cake() {
   const cakes = [
     { id: 1, name: "Vanilla Cake",   price: 375, image: vc,  tag: "Classic"    },
-    { id: 2, name: "Chocolate Cake", price: 500, image: cc,  tag: "Fan Fav 💜" },
+    { id: 2, name: "Chocolate Cake", price: 500, image: cc,  tag: "Fan Fav"    },
     { id: 3, name: "Cheesecake",     price: 175, image: chc, tag: "Light"      },
     { id: 4, name: "Black Forest",   price: 500, image: bfc, tag: "Premium"    },
     { id: 5, name: "Brownie",        price: 60,  image: b,   tag: "Best Seller"},
@@ -21,58 +21,77 @@ function Cake() {
   ];
 
   return (
-    <div style={{ fontFamily: "'Nunito', sans-serif", background: "#FDF8FF", minHeight: "100vh" }}>
+    <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#FAF7F4", minHeight: "100vh" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');`}</style>
       <Navbar />
 
       {/* Banner */}
-      <div style={{ position: "relative", height: 280, overflow: "hidden" }}>
-        <img src={cb} alt="cake banner" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(156,39,176,0.88), rgba(233,30,99,0.75))" }} />
-        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 20px" }}>
-          <div style={{
-            background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.3)",
-            borderRadius: 30, padding: "4px 18px", marginBottom: 14,
-            color: "#fff", fontSize: "0.78rem", fontWeight: 800, letterSpacing: "2px", textTransform: "uppercase",
-          }}>Every Occasion Deserves Sweetness</div>
-          <h1 style={{ color: "#fff", fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 900, fontFamily: "'Poppins', sans-serif", textAlign: "center", textShadow: "0 4px 20px rgba(0,0,0,0.2)" }}>
-            🎂 Celebrate With Us
-          </h1>
-          <p style={{ color: "rgba(255,255,255,0.9)", marginTop: 10, fontSize: "1rem", fontWeight: 600 }}>
-            Handcrafted cakes baked fresh for you
-          </p>
-          <div style={{ display: "flex", gap: 20, marginTop: 18, flexWrap: "wrap", justifyContent: "center" }}>
-            {["⭐ 4.9 Rating", "🎂 Custom Orders", "🆓 Free Delivery"].map((s) => (
-              <div key={s} style={{
-                background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.35)",
-                borderRadius: 20, padding: "4px 14px",
-                color: "#fff", fontSize: "0.78rem", fontWeight: 700,
-              }}>{s}</div>
-            ))}
+      <div style={{ position: "relative", height: 300, overflow: "hidden" }}>
+        <img src={cb} alt="cake banner" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.5) saturate(1.1)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(28,16,8,0.7) 0%, rgba(92,61,143,0.45) 100%)" }} />
+        <div style={{
+          position: "absolute", inset: 0,
+          display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-end",
+          padding: "0 0 40px",
+        }}>
+          <div className="container">
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              background: "rgba(92,61,143,0.25)",
+              border: "1px solid rgba(92,61,143,0.4)",
+              borderRadius: 999, padding: "4px 12px", marginBottom: 12,
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#9B72CF", display: "inline-block" }} />
+              <span style={{ color: "#C9AEF0", fontSize: "0.7rem", fontWeight: 600, letterSpacing: "1.5px", textTransform: "uppercase" }}>
+                Every Occasion Deserves Sweetness
+              </span>
+            </div>
+            <h1 style={{
+              fontFamily: "'Playfair Display', serif",
+              color: "#FAF7F4", fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: 700,
+              marginBottom: 8, lineHeight: 1.15,
+            }}>
+              Celebrate With Us
+            </h1>
+            <p style={{ color: "rgba(250,247,244,0.7)", fontSize: "0.93rem", fontWeight: 400 }}>
+              Handcrafted cakes baked fresh for you
+            </p>
+            <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap" }}>
+              {["4.9 Rating", "Custom Orders", "Free Delivery"].map((s) => (
+                <div key={s} style={{
+                  background: "rgba(255,255,255,0.1)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: 999, padding: "4px 12px",
+                  color: "rgba(250,247,244,0.85)", fontSize: "0.74rem", fontWeight: 500,
+                }}>{s}</div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Products */}
-      <div style={{ padding: "48px 0 72px" }}>
+      <div style={{ padding: "52px 0 80px" }}>
         <div className="container">
-          <div style={{ marginBottom: 32, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 32 }}>
             <div>
-              <div style={{ color: "#9C27B0", fontSize: "0.75rem", fontWeight: 800, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 6 }}>
+              <p style={{ color: "#5C3D8F", fontSize: "0.68rem", fontWeight: 700, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 6 }}>
                 {cakes.length} Delicious Cakes
-              </div>
-              <h2 style={{ color: "#1A1A2E", fontSize: "1.6rem", fontWeight: 900, fontFamily: "'Poppins', sans-serif" }}>
+              </p>
+              <h2 style={{
+                fontFamily: "'Playfair Display', serif",
+                color: "#1C1008", fontSize: "1.5rem", fontWeight: 700,
+              }}>
                 Our Cake Collection
               </h2>
             </div>
             <div style={{
-              background: "#F3E5F5", border: "1px solid #CE93D8",
-              borderRadius: 20, padding: "6px 16px",
-              color: "#9C27B0", fontSize: "0.82rem", fontWeight: 800,
               display: "flex", alignItems: "center", gap: 6,
+              background: "#F0FDF6", border: "1px solid #BBF7D0",
+              borderRadius: 999, padding: "5px 14px",
             }}>
-              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#4CAF50", display: "inline-block" }} />
-              Fresh Baked Today
+              <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#16A34A", display: "inline-block" }} />
+              <span style={{ color: "#166534", fontSize: "0.76rem", fontWeight: 600 }}>Fresh Baked Today</span>
             </div>
           </div>
 

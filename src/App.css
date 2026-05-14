@@ -1,89 +1,76 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
 :root {
-  --primary: #FF5722;
-  --primary-light: #FF7043;
-  --primary-dark: #E64A19;
-  --secondary: #FFC107;
-  --accent-green: #4CAF50;
-  --accent-purple: #9C27B0;
-  --bg: #FFF8F5;
-  --bg-card: #FFFFFF;
-  --bg-subtle: #FFF3EE;
-  --text-main: #1A1A2E;
-  --text-muted: #6B7280;
-  --text-light: #9CA3AF;
-  --border: #F3E8E3;
-  --shadow-sm: 0 2px 8px rgba(255,87,34,0.08);
-  --shadow-md: 0 8px 24px rgba(255,87,34,0.12);
-  --shadow-lg: 0 16px 48px rgba(255,87,34,0.18);
-  --radius-sm: 12px;
-  --radius-md: 18px;
-  --radius-lg: 24px;
-  --radius-xl: 32px;
+  --brand:        #C8410A;
+  --brand-deep:   #9E3208;
+  --brand-warm:   #E8622A;
+  --brand-glow:   rgba(200,65,10,0.12);
+  --gold:         #B8860B;
+  --gold-light:   #F5D78E;
+  --green:        #2D6A4F;
+  --green-light:  #D8F3DC;
+  --violet:       #5C3D8F;
+  --violet-light: #EDE7F6;
+
+  --bg:           #FAF7F4;
+  --bg-card:      #FFFFFF;
+  --bg-warm:      #FFF5EE;
+  --bg-dark:      #18110C;
+  --bg-mid:       #2C1A10;
+
+  --ink:          #1C1008;
+  --ink-2:        #3D2B1F;
+  --ink-muted:    #7A6458;
+  --ink-light:    #B09A90;
+  --rule:         #EBE0D8;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  --sh-sm:  0 2px 8px rgba(28,16,8,0.07);
+  --sh-md:  0 6px 24px rgba(28,16,8,0.1);
+  --sh-lg:  0 16px 48px rgba(28,16,8,0.14);
+  --sh-brand: 0 8px 28px rgba(200,65,10,0.22);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--bg);
-  font-family: 'Nunito', sans-serif;
-  color: var(--text-main);
+  font-family: var(--font-body);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #FFF3EE; }
-::-webkit-scrollbar-thumb { background: #FFCCBC; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #D4B8A8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--brand); }
 
-a, button { transition: all 0.22s ease; }
-input::placeholder { color: #BEB4AE; }
+a { text-decoration: none; color: inherit; transition: color 0.2s; }
+button { font-family: var(--font-body); }
+input { font-family: var(--font-body); }
+input::placeholder { color: var(--ink-light); }
 input:focus { outline: none; }
 
-/* Gradient text utility */
-.gradient-text {
-  background: linear-gradient(135deg, #FF5722, #FF9800);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+/* ── Utility ─────────────────────────────── */
+.display { font-family: var(--font-display); }
 
-/* Pulse animation for badges */
-@keyframes pulse-badge {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.12); }
-}
-
-/* Float animation */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-/* Shimmer */
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-/* Spin */
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Slide up */
-@keyframes slideUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-/* Pop in */
-@keyframes popIn {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-/* fadeUp */
-@keyframes fadeUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
+/* ── Animations ──────────────────────────── */
+@keyframes spin      { to { transform: rotate(360deg); } }
+@keyframes fadeUp    { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp   { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn     { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+@keyframes marquee   { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes shimmer   { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+@keyframes confetti  { 0%,100% { transform: rotate(-6deg) scale(1); } 50% { transform: rotate(6deg) scale(1.1); } }

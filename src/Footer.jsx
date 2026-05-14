@@ -3,136 +3,142 @@ import React from "react";
 function Footer() {
   return (
     <footer style={{
-      background: "#1A1A2E",
-      padding: "56px 0 24px",
-      fontFamily: "'Nunito', sans-serif",
+      background: "#18110C",
+      padding: "60px 0 28px",
+      fontFamily: "'DM Sans', sans-serif",
     }}>
       <div className="container">
         <div className="row">
-          {/* Brand */}
-          <div className="col-md-4 mb-4">
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+          {/* Brand col */}
+          <div className="col-md-4 mb-5">
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
               <div style={{
-                width: 40, height: 40, borderRadius: "50%",
-                background: "linear-gradient(135deg, #FF5722, #FF9800)",
+                width: 36, height: 36,
+                background: "linear-gradient(135deg, #C8410A, #E8622A)",
+                borderRadius: 10,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "1.2rem",
-              }}>🍽️</div>
+              }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 2.76 1.57 5.15 3.87 6.4L8 20h8l-.87-4.6C17.43 14.15 19 11.76 19 9c0-3.87-3.13-7-7-7z" fill="white" opacity="0.9"/>
+                  <path d="M9 21h6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+              </div>
               <span style={{
-                background: "linear-gradient(135deg, #FF7043, #FFC107)",
-                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                fontSize: "1.2rem", fontWeight: 900, fontFamily: "'Poppins', sans-serif",
-              }}>HUNGRY LAYER</span>
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "1.1rem",
+                fontWeight: 700,
+                color: "#FAF7F4",
+              }}>Hungry Layer</span>
             </div>
-            <p style={{ color: "#9CA3AF", fontSize: "0.88rem", lineHeight: 1.7, marginBottom: 18 }}>
+            <p style={{
+              color: "#7A6458",
+              fontSize: "0.86rem",
+              lineHeight: 1.75,
+              marginBottom: 22,
+              maxWidth: 260,
+            }}>
               Your favourite food, groceries & cakes — delivered fast, fresh & hot to your doorstep.
             </p>
-            <div style={{ display: "flex", gap: 12, marginTop: 4 }}>
+            <div style={{ display: "flex", gap: 10 }}>
               {[
-                { icon: "bi-telephone-fill", color: "#4CAF50" },
-                { icon: "bi-whatsapp",       color: "#25D366" },
-                { icon: "bi-instagram",      color: "#E1306C" },
-                { icon: "bi-facebook",       color: "#1877F2" },
-              ].map(({ icon, color }) => (
+                { label: "Phone", color: "#2D6A4F" },
+                { label: "WhatsApp", color: "#25D366" },
+                { label: "Instagram", color: "#C8410A" },
+                { label: "Facebook", color: "#1877F2" },
+              ].map(({ label, color }) => (
                 <div
-                  key={icon}
+                  key={label}
+                  title={label}
                   style={{
-                    width: 36, height: 36, borderRadius: "50%",
-                    background: `${color}18`, border: `1px solid ${color}30`,
+                    width: 34, height: 34, borderRadius: "50%",
+                    border: `1px solid ${color}30`,
+                    background: `${color}14`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     cursor: "pointer", transition: "all 0.2s",
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = color; e.currentTarget.querySelector("i").style.color = "#fff" }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = `${color}18`; e.currentTarget.querySelector("i").style.color = color }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = color; e.currentTarget.style.borderColor = color; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = `${color}14`; e.currentTarget.style.borderColor = `${color}30`; }}
                 >
-                  <i className={`bi ${icon}`} style={{ color, fontSize: "0.95rem", transition: "color 0.2s" }} />
+                  <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#B09A90" }}>{label[0]}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="col-md-2 mb-4">
-            <h6 style={{ color: "#fff", marginBottom: 16, fontWeight: 800, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "1px" }}>
+          {/* Categories */}
+          <div className="col-md-2 col-6 mb-4">
+            <p style={{ color: "#FAF7F4", fontWeight: 700, fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "2px", marginBottom: 16 }}>
               Categories
-            </h6>
-            {[
-              { label: "🍛 Food",    emoji: "" },
-              { label: "🎂 Cakes",   emoji: "" },
-              { label: "🛒 Grocery", emoji: "" },
-            ].map(({ label }) => (
+            </p>
+            {["Food", "Cakes", "Grocery"].map((item) => (
               <p
-                key={label}
-                style={{ fontSize: "0.88rem", marginBottom: 10, cursor: "pointer", color: "#9CA3AF", fontWeight: 600, transition: "color 0.2s" }}
-                onMouseEnter={(e) => (e.target.style.color = "#FF7043")}
-                onMouseLeave={(e) => (e.target.style.color = "#9CA3AF")}
-              >{label}</p>
+                key={item}
+                style={{ color: "#7A6458", fontSize: "0.86rem", marginBottom: 10, cursor: "pointer", fontWeight: 500, transition: "color 0.2s" }}
+                onMouseEnter={(e) => (e.target.style.color = "#E8622A")}
+                onMouseLeave={(e) => (e.target.style.color = "#7A6458")}
+              >{item}</p>
             ))}
           </div>
 
-          {/* Communities */}
-          <div className="col-md-2 mb-4">
-            <h6 style={{ color: "#fff", marginBottom: 16, fontWeight: 800, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "1px" }}>
+          {/* Community */}
+          <div className="col-md-2 col-6 mb-4">
+            <p style={{ color: "#FAF7F4", fontWeight: 700, fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "2px", marginBottom: 16 }}>
               Community
-            </h6>
-            {["Food Lovers", "Recipes", "Events"].map((t) => (
+            </p>
+            {["Food Lovers", "Recipes", "Events"].map((item) => (
               <p
-                key={t}
-                style={{ fontSize: "0.88rem", marginBottom: 10, cursor: "pointer", color: "#9CA3AF", fontWeight: 600, transition: "color 0.2s" }}
-                onMouseEnter={(e) => (e.target.style.color = "#FF7043")}
-                onMouseLeave={(e) => (e.target.style.color = "#9CA3AF")}
-              >{t}</p>
+                key={item}
+                style={{ color: "#7A6458", fontSize: "0.86rem", marginBottom: 10, cursor: "pointer", fontWeight: 500, transition: "color 0.2s" }}
+                onMouseEnter={(e) => (e.target.style.color = "#E8622A")}
+                onMouseLeave={(e) => (e.target.style.color = "#7A6458")}
+              >{item}</p>
             ))}
           </div>
 
           {/* Contact */}
           <div className="col-md-4 mb-4">
-            <h6 style={{ color: "#fff", marginBottom: 16, fontWeight: 800, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "1px" }}>
+            <p style={{ color: "#FAF7F4", fontWeight: 700, fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "2px", marginBottom: 16 }}>
               Get In Touch
-            </h6>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {[
-                { icon: "📞", text: "9345587563", color: "#4CAF50" },
-                { icon: "✉️", text: "isravel@gmail.com", color: "#2196F3" },
-                { icon: "📍", text: "Near Manda House", color: "#FF5722" },
-                { icon: "📍", text: "Near Richard Nadar House", color: "#FF5722" },
+                { label: "9345587563" },
+                { label: "isravel@gmail.com" },
+                { label: "Near Manda House" },
+                { label: "Near Richard Nadar House" },
               ].map((c, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontSize: "0.9rem" }}>{c.icon}</span>
-                  <span style={{ color: "#9CA3AF", fontSize: "0.85rem", fontWeight: 600 }}>{c.text}</span>
-                </div>
+                <span key={i} style={{ color: "#7A6458", fontSize: "0.84rem", fontWeight: 500 }}>{c.label}</span>
               ))}
             </div>
-
-            {/* Delivery badge */}
             <div style={{
               marginTop: 20, display: "inline-flex", alignItems: "center", gap: 8,
-              background: "rgba(76,175,80,0.1)", border: "1px solid rgba(76,175,80,0.25)",
-              borderRadius: 20, padding: "6px 14px",
+              background: "rgba(45,106,79,0.15)",
+              border: "1px solid rgba(45,106,79,0.3)",
+              borderRadius: 999, padding: "5px 14px",
             }}>
-              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#4CAF50", display: "inline-block" }} />
-              <span style={{ color: "#4CAF50", fontSize: "0.8rem", fontWeight: 800 }}>Delivering Now • Open 24/7</span>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ADE80", display: "inline-block" }} />
+              <span style={{ color: "#4ADE80", fontSize: "0.75rem", fontWeight: 600 }}>Delivering Now · Open 24/7</span>
             </div>
           </div>
         </div>
 
         {/* Bottom bar */}
         <div style={{
-          borderTop: "1px solid rgba(255,255,255,0.08)",
-          paddingTop: 20,
-          marginTop: 8,
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          paddingTop: 22, marginTop: 12,
           display: "flex", justifyContent: "space-between", alignItems: "center",
           flexWrap: "wrap", gap: 12,
         }}>
-          <span style={{ color: "#4B5563", fontSize: "0.8rem" }}>
-            © 2025 <span style={{ color: "#FF7043", fontWeight: 700 }}>Hungry Layer</span>. All rights reserved.
+          <span style={{ color: "#4A3728", fontSize: "0.78rem" }}>
+            © 2025 <span style={{ color: "#E8622A" }}>Hungry Layer</span>. All rights reserved.
           </span>
-          <div style={{ display: "flex", gap: 6 }}>
-            {["🔒 Secure Payments", "⚡ Fast Delivery", "✅ Quality Assured"].map((b) => (
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {["Secure Payments", "Fast Delivery", "Quality Assured"].map((b) => (
               <span key={b} style={{
-                background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 20, padding: "3px 10px",
-                color: "#6B7280", fontSize: "0.72rem", fontWeight: 600,
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.07)",
+                borderRadius: 999, padding: "3px 10px",
+                color: "#4A3728", fontSize: "0.7rem", fontWeight: 500,
               }}>{b}</span>
             ))}
           </div>
